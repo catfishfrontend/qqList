@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		ul{
+			overflow: hidden;
+		}
+		ul:after{
+			content: "";
+			clear: both;
+			display: block;
+		}
+		li{
+			position: relative;
+			list-style: none;
+			float: left;
+			width: 100%;
+			height: 60px;
+			border-bottom: solid 1px #E9E9E9;
+			transition: all 1s;
+			-webkit-transition: all 1s;	
+		}
+		.button1,.button2{
+			position: absolute;
+			top: 0;
+			width: 20%;
+			height: 60px;
+			line-height: 60px;
+			border: 0;
+			color: #fff;
+		}
+		.button1{
+			right: -20%;
+			background-color: #C5C8CF;
+		}
+		.button2{
+			right: -40%;
+			background-color: #FF3B32;
+		}
+	</style>
+	<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+	<title></title>
+</head>
+<body>
+
+
+<script type="text/javascript">
+$(function(){
+
+
+	function qqList() {
+		var ul =$("<ul></ul>");
+		$('body').append(ul);
+		
+		for(var i=0;i<=20;i++){
+			var li =$("<li></li>");
+			var button1 = $("<button class='button1'></button>");
+			var button2 = $("<button class='button2'></button>");
+			ul.append(li);
+			li.append(button1);
+			li.append(button2);
+			button1.text('置顶');
+			button2.text('删除');
+		}
+		var bWidth = $("button").width();
+		function touchstart(e){  //触摸开始事件
+			e.preventDefault();
+			var touch = e.targetTouches[0];
+			startX = touch.pageX;
+			startY = touch.pageY;
+			liIndex = Math.ceil(startY/60)-1; //此处为获得里li的索引
+			
+		}
+
+		function touchmove(e){ //触摸滑动事件
+			e.preventDefault();
+			var touch = e.targetTouches[0];
+			var x = touch.pageX;
+			var y = touch.pageY;
+			var liNode = $("li").eq(liIndex);
+			distance = x - startX;
+			console.log(distance);
+			if(distance < 0 && Math.abs(distance) < 2*bWidth){ //触摸滑动状态判断
+				liNode.css({
+					right:Math.abs(distance) + 'px'
+				})
+			}else if(distance > 0 && Math.abs(distance) < 2*bWidth && liNode.hasClass('action')){ //此处加个类作为li处于何种状态的判断
+				liNode.css({
+					right:2*bWidth-Math.abs(distance) + 'px'
+				})
+			}
+		}
+
+		function touchend(e){ //触摸结束事件
+			e.preventDefault();
+			var liNode = $("li").eq(liIndex);
+			if(distance < 0 && Math.abs(distance) < bWidth/2 ){ //触摸结束时的三种状态判断
+				liNode.css({
+					right:0
+				});
+				liNode.removeClass('action');
+			}else if(distance < 0 && Math.abs(distance) > bWidth/2){
+				liNode.css({
+					right:2*bWidth +'px'
+				});
+				liNode.addClass('action');
+			}else if(distance > 0 && Math.abs(distance) > bWidth/2 && liNode.hasClass('action')){
+				liNode.css({
+					right:0
+				});
+				liNode.removeClass('action');
+			}else if(distance > 0 && Math.abs(distance) < bWidth/2 && liNode.hasClass('action')){
+				liNode.css({
+					right:2*bWidth +'px'
+				});
+			}
+		}
+		$("li").on("touchstart",touchstart); //元素绑定事件
+		$("li").on("touchmove",touchmove);
+		$("li").on("touchend",touchend);
+	}
+	qqList();
+})	
+</script>
+</body>
+</html>
